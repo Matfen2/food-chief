@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+/* === Palette principale du site FoodChief === */
+:root {
+  --bg: #163C2E;
+  --accent: #2D6A4F;
+  --accent-light: #40916C;
+  --text: #FFFFFF;
+  --text-muted: #D8E3DD;
+  --border: #2B5848;
+  --card-bg: #1B4D3E;
+  --error: #D64550;
+  --success: #55A630;
+  --warning: #FFB703;
+  --amatic: 'AmaticSC';
+  --bebas: 'BebasNeue';
+}
+
+/* === Importation des polices locales === */
+@font-face {
+  font-family: var(--amatic);
+  src:
+    url('/fonts/AmaticSC-Bold.ttf') format('truetype');
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: var(--bebas);
+  src:
+    url('../public/fonts/BebasNeue-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-display: swap;
+}
+
+
+/* --- Styles généraux globaux --- */
+* {
+  box-sizing: border-box;
+}
