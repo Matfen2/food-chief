@@ -12,29 +12,33 @@
   --error: #D64550;
   --success: #55A630;
   --warning: #FFB703;
-  --amatic: 'AmaticSC';
-  --bebas: 'BebasNeue';
+  --amatic: "AmaticSC";
+  --bebas: "BebasNeue";
 }
 
 /* === Importation des polices locales === */
 @font-face {
-  font-family: var(--amatic);
-  src:
-    url('/fonts/AmaticSC-Bold.ttf') format('truetype');
+  font-family: "AmaticSC";                 /* <-- nom littéral */
+  src: url("/fonts/AmaticSC-Bold.ttf") format("truetype");
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: var(--bebas);
-  src:
-    url('../public/fonts/BebasNeue-Regular.ttf') format('truetype');
+  font-family: "BebasNeue";                /* <-- nom littéral */
+  src: url("/fonts/BebasNeue-Regular.ttf") format("truetype");
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
-
 /* --- Styles généraux globaux --- */
 * {
   box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
 }
