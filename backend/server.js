@@ -18,9 +18,8 @@ app.get('/', (req, res) => {
 
 // GET /recipes
 app.get("/api/recipes", (req, res) => {
-    res.json(recipes);
-    res.status(200);
-    res.send(console.log("Voici toutes les recettes"));
+    res.status(200).json(recipes);
+    console.log("Voici toutes les recettes");
 })
 
 // GET /recipes/:id (recette dédiée)
