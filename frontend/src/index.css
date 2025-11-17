@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+/* RACCOURCIS */
+:root {
+  /* Couleur principale - Orange de la créativité et du partage */
+  --primary: #db7500;
+  --primary-light: #f59e42;
+  --primary-dark: #b85f00;
+  
+  /* Couleurs secondaires - Chaleur et convivialité */
+  --secondary: #ff9500;
+  --secondary-light: #ffb84d;
+  --secondary-dark: #cc7700;
+  
+  /* Accents - Inspiration et gourmandise */
+  --accent-warm: #ffd494;      /* Beige doré - chaleur du partage */
+  --accent-cream: #fff4e6;     /* Crème - douceur des recettes */
+  --accent-honey: #ffb347;     /* Miel - douceur naturelle */
+  
+  /* États système */
+  --border: #e5a854;           /* Bordure dorée */
+  --error: #dc2626;            /* Rouge pour erreurs */
+  --success: #16a34a;          /* Vert pour succès */
+  --warning: #f59e0b;          /* Jaune pour avertissements */
+  
+  /* Couleurs de texte */
+  --text-primary: #2d1b0e;     /* Marron foncé - lisibilité */
+  --text-secondary: #6b4423;   /* Marron moyen */
+  --text-muted: #9c6d42;       /* Marron clair */
+  --text-white: #ffffff;
+  
+  /* Backgrounds */
+  --bg-main: #ffffff;
+  --bg-light: #fff9f0;         /* Fond crème chaud */
+  --bg-card: #fffaf5;          /* Fond carte légèrement teinté */
+  --bg-hover: #ffefd5;         /* Effet hover chaleureux */
+  
+  /* Gradients - Évoquent la transformation culinaire */
+  --gradient-warm: linear-gradient(135deg, #db7500 0%, #ff9500 100%);
+  --gradient-soft: linear-gradient(135deg, #fff4e6 0%, #ffd494 100%);
+  --gradient-hero: linear-gradient(135deg, #db7500 0%, #ffb347 50%, #ffd494 100%);
+  
+  /* Ombres - Profondeur et relief */
+  --shadow-sm: 0 2px 4px rgba(219, 117, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(219, 117, 0, 0.15);
+  --shadow-lg: 0 8px 16px rgba(219, 117, 0, 0.2);
+  --shadow-xl: 0 12px 24px rgba(219, 117, 0, 0.25);
+  
+  /* Polices */
+  --amatic: AmaticSC, cursive;
+  --spbutch: SPButchLite, sans-serif;
+}
+
+/* FONTS */
+@font-face {
+    font-family: SPButchLite;
+    src: url("./../public/fonts/SPButchLite-Medium.otf");
+}
+
+@font-face {
+    font-family: AmaticSC;
+    src: url("./../public/fonts/AmaticSC-Regular.ttf");
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-repeat: no-repeat;
+}
