@@ -63,6 +63,12 @@ const recipeSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    ustensiles: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
   },
   {
     timestamps: true, // createdAt et updatedAt automatiques

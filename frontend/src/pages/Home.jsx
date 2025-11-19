@@ -22,26 +22,16 @@ const Home = () => {
           <Header />
           
           {/* Hero Content centré verticalement ET horizontalement */}
-          <div className="flex-1 flex items-center justify-center mx-auto">
+          <div className="flex-1 flex pt-12 md:pt-20 items-center justify-center w-full">
             <SearchRecipe />
           </div>
         </div>
       </section>
 
       {/* Section des recettes */}
-      <section className="py-8 sm:py-12 md:py-16 bg-[var(--bg-light)]">
+      <section className="py-8 sm:py-12 md:py-8 bg-[var(--bg-light)]">
         <div className="max-w-full mx-auto px-8">
-          {/* Titre */}
-          <h2 
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 md:mb-8 text-center"
-            style={{ 
-              fontFamily: 'var(--amatic)',
-              color: 'var(--text-primary)' 
-            }}
-          >
-            Recettes Populaires
-          </h2>
-          
+        
           {/* Liste des recettes */}
           <ListRecipe />
         </div>
