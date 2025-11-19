@@ -1,5 +1,6 @@
 import Footer from "../components/Footer"
 import Header from "../components/Header"
+import ListRecipe from "../components/home/ListRecipes"
 import SearchRecipe from "../components/home/SearchRecipe"
 
 const Home = () => {
@@ -29,8 +30,8 @@ const Home = () => {
 
       {/* Section des recettes */}
       <section className="py-8 sm:py-12 md:py-16 bg-[var(--bg-light)]">
-        <div className="container mx-auto px-4">
-          {/* Titre responsive */}
+        <div className="max-w-full mx-auto px-8">
+          {/* Titre */}
           <h2 
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 md:mb-8 text-center"
             style={{ 
@@ -41,10 +42,8 @@ const Home = () => {
             Recettes Populaires
           </h2>
           
-          {/* Filtres */}
-        
-          
-          {/* Grille de recettes  */}
+          {/* Liste des recettes */}
+          <ListRecipe />
         </div>
 
         <Footer />
