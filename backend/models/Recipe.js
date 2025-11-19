@@ -8,12 +8,6 @@ const recipeSchema = new mongoose.Schema(
       trim: true,
       maxlength: [100, "Le titre ne peut pas dépasser 100 caractères"],
     },
-    posted: {
-        type: Date || new Date,
-    },
-    namePosted: {
-        type: String,
-    },
     description: {
       type: String,
       required: [true, "La description est requise"],
@@ -59,21 +53,7 @@ const recipeSchema = new mongoose.Schema(
     difficulty: {
       type: String,
       enum: ["Facile", "Moyen", "Difficile"],
-      default: "Moyen",
-    },
-    category: {
-      type: String,
-      required: [true, "La catégorie est requise"],
-      enum: [
-        "Entrée",
-        "Plat principal",
-        "Dessert",
-        "Petit-déjeuner",
-        "Goûter",
-        "Boisson",
-        "Sauce",
-        "Autre",
-      ],
+      required: [true, "La difficulté est requise"],
     },
     image: {
       type: String,
@@ -83,20 +63,14 @@ const recipeSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    tags: [
-      {
-        type: String,
-        trim: true,
-      },
-    ],
   },
   {
-    timestamps: true, 
+    timestamps: true, // createdAt et updatedAt automatiques
   }
 );
 
-// Index pour optimiser les recherches
-recipeSchema.index({ title: "text", description: "text", tags: "text" });
+// Index pour la recherche (seulement titre et description maintenant)
+recipeSchema.index({ title: "text", description: "text" });
 
 const Recipe = mongoose.model("Recipe", recipeSchema);
 

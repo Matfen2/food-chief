@@ -7,27 +7,23 @@ import {
   deleteRecipe,
   toggleFavorite,
   getFavoriteRecipes,
-  getMyRecipes,
 } from "../controllers/recipeController.js";
 
 const router = express.Router();
 
-// Routes publiques (pas besoin d'authentification)
+// Routes publiques
 router.get("/", getAllRecipes);
 router.get("/favorites", getFavoriteRecipes);
-
-// Routes privées (nécessitent authentification)
-router.get("/myrecipes", getMyRecipes);
 router.post("/", createRecipe);
 
-// Routes spécifiques à une recette
+// Routes pour une recette spécifique
 router
   .route("/:id")
-  .get(getRecipeById) // Public - tout le monde peut voir
-  .put(updateRecipe) // Privé - seulement l'auteur
-  .delete(deleteRecipe); // Privé - seulement l'auteur
+  .get(getRecipeById)
+  .put(updateRecipe)
+  .delete(deleteRecipe);
 
-// Route pour basculer le statut favori
+// Routes privées
 router.patch("/:id/favorite", toggleFavorite);
 
 export default router;
