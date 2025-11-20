@@ -11,19 +11,23 @@ import {
 
 const router = express.Router();
 
-// Routes publiques
+// IMPORTANT : Routes spécifiques AVANT les routes avec paramètres dynamiques (:id)
+
+// Routes de collection
 router.get("/", getAllRecipes);
-router.get("/favorites", getFavoriteRecipes);
 router.post("/", createRecipe);
 
-// Routes pour une recette spécifique
+// Routes spécifiques (AVANT /:id)
+router.get("/favorites", getFavoriteRecipes);
+
+// Routes avec ID dynamique
 router
   .route("/:id")
   .get(getRecipeById)
-  .put(updateRecipe)
+  .patch(updateRecipe)  
   .delete(deleteRecipe);
 
-// Routes privées
+// Route spécifique pour toggle favori
 router.patch("/:id/favorite", toggleFavorite);
 
 export default router;

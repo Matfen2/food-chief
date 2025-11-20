@@ -13,6 +13,10 @@ const recipeSchema = new mongoose.Schema(
       required: [true, "La description est requise"],
       maxlength: [500, "La description ne peut pas dépasser 500 caractères"],
     },
+    author: {
+      type: String,
+      trim: true,
+    },
     ingredients: [
       {
         name: {
