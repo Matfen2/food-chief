@@ -20,10 +20,24 @@ export const createRecipe = async (req, res) => {
   }
 };
 
-// Obtenir toutes les recettes
+// Obtenir toutes les recettes (avec recherche optionnelle par titre)
 export const getAllRecipes = async (req, res) => {
   try {
-    const recipes = await Recipe.find();
+    const { title } = req.query; // ?title=limonade
+    
+    let query = {};
+    
+    // Si paramètre title existe, on filtre avec regex (insensible à la casse)
+    if (title && title.trim() !== '') {
+      query.title = { $regex: title.trim(), $options: 'i' };
+      console.log(`🔍 Recherche avec titre: "${title}"`);
+    } else {
+      console.log('📋 Récupération de toutes les recettes');
+    }
+    
+    const recipes = await Recipe.find(query);
+    
+    console.log(`✅ ${recipes.length} recette(s) trouvée(s)`);
     
     res.status(200).json({
       success: true,

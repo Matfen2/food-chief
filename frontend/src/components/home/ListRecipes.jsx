@@ -6,28 +6,39 @@ import { FaUtensils, FaExclamationTriangle, FaSearch } from "react-icons/fa";
 import { IoReload } from "react-icons/io5";
 import { BiDish } from "react-icons/bi";
 
-const ListRecipes = () => {
+const ListRecipes = ({ searchQuery }) => {
     const [recipes, setRecipes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
+    // Appel API quand searchQuery change
     useEffect(() => {
         fetchRecipes();
-    }, []);
+    }, [searchQuery]); // Refetch quand la recherche change
 
     const fetchRecipes = async () => {
         try {
             setLoading(true);
             setError(null);
             
-            const response = await axios.get(`${API_URL}/recipes`);
+            // Construire l'URL avec ou sans paramètre de recherche
+            let url = `${API_URL}/recipes`;
+            if (searchQuery && searchQuery.trim() !== '') {
+                url += `?title=${encodeURIComponent(searchQuery)}`;
+                console.log("🔍 Recherche API avec:", searchQuery);
+            } else {
+                console.log("📋 Chargement de toutes les recettes");
+            }
+            
+            const response = await axios.get(url);
             const data = response.data.data || response.data;
             
+            console.log(`✅ ${data.length} recette(s) reçue(s)`);
             setRecipes(Array.isArray(data) ? data : []);
         } catch (err) {
-            console.error("Erreur:", err);
+            console.error("❌ Erreur:", err);
             setError(err.message || "Une erreur est survenue");
         } finally {
             setLoading(false);
@@ -35,7 +46,7 @@ const ListRecipes = () => {
     };
 
     // ============================================
-    // ÉTAT LOADING - Loader moderne et animé
+    // ÉTAT LOADING
     // ============================================
     if (loading) {
         return (
@@ -45,30 +56,22 @@ const ListRecipes = () => {
                 exit={{ opacity: 0 }}
                 className="flex flex-col items-center justify-center py-20 px-4"
             >
-                {/* Loader animé avec plusieurs cercles */}
                 <div className="relative w-32 h-32 mb-8">
-                    {/* Cercle extérieur */}
                     <motion.div
                         className="absolute inset-0 border-4 border-orange-200 rounded-full"
                         animate={{ rotate: 360 }}
                         transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                     />
-                    
-                    {/* Cercle du milieu */}
                     <motion.div
                         className="absolute inset-3 border-4 border-orange-400 rounded-full border-t-transparent"
                         animate={{ rotate: -360 }}
                         transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                     />
-                    
-                    {/* Cercle intérieur */}
                     <motion.div
                         className="absolute inset-6 border-4 border-orange-600 rounded-full border-t-transparent border-r-transparent"
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                     />
-
-                    {/* Icône centrale */}
                     <motion.div
                         className="absolute inset-0 flex items-center justify-center"
                         animate={{ scale: [1, 1.2, 1] }}
@@ -77,8 +80,6 @@ const ListRecipes = () => {
                         <FaUtensils className="text-4xl text-orange-500" />
                     </motion.div>
                 </div>
-
-                {/* Texte animé */}
                 <motion.div
                     initial={{ y: 10, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -89,10 +90,8 @@ const ListRecipes = () => {
                         className="text-3xl font-bold text-gray-800 mb-2"
                         style={{ fontFamily: 'var(--amatic)', letterSpacing: '1px' }}
                     >
-                        Chargement des recettes...
+                        {searchQuery ? "Recherche en cours..." : "Chargement des recettes..."}
                     </h3>
-                    
-                    {/* Points animés */}
                     <div className="flex justify-center items-center gap-2 mt-4">
                         {[0, 1, 2].map((i) => (
                             <motion.div
@@ -116,7 +115,7 @@ const ListRecipes = () => {
     }
 
     // ============================================
-    // ÉTAT ERROR - Design moderne avec illustration
+    // ÉTAT ERROR
     // ============================================
     if (error) {
         return (
@@ -127,7 +126,6 @@ const ListRecipes = () => {
                 className="flex flex-col items-center justify-center py-20 px-4"
             >
                 <div className="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200 rounded-3xl p-12 max-w-md shadow-2xl">
-                    {/* Icône animée */}
                     <motion.div
                         initial={{ rotate: 0 }}
                         animate={{ rotate: [0, -10, 10, -10, 0] }}
@@ -145,21 +143,15 @@ const ListRecipes = () => {
                             </div>
                         </div>
                     </motion.div>
-
-                    {/* Titre */}
                     <h3 
                         className="text-4xl font-bold text-red-600 mb-4 text-center"
                         style={{ fontFamily: 'var(--amatic)', letterSpacing: '1px' }}
                     >
                         Oups, une erreur !
                     </h3>
-
-                    {/* Message */}
                     <p className="text-gray-700 text-center mb-6 text-lg">
                         {error}
                     </p>
-
-                    {/* Suggestions */}
                     <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-4 mb-6">
                         <p className="text-sm text-gray-600 mb-2 font-semibold">💡 Suggestions :</p>
                         <ul className="text-sm text-gray-600 space-y-1">
@@ -168,8 +160,6 @@ const ListRecipes = () => {
                             <li>• Réessayez dans quelques instants</li>
                         </ul>
                     </div>
-
-                    {/* Bouton réessayer */}
                     <motion.button
                         onClick={fetchRecipes}
                         whileHover={{ scale: 1.05 }}
@@ -186,7 +176,7 @@ const ListRecipes = () => {
     }
 
     // ============================================
-    // ÉTAT EMPTY - Design élégant et engageant
+    // AUCUN RÉSULTAT
     // ============================================
     if (recipes.length === 0) {
         return (
@@ -197,7 +187,6 @@ const ListRecipes = () => {
                 className="flex flex-col items-center justify-center py-20 px-4"
             >
                 <div className="bg-gradient-to-br from-orange-50 to-yellow-50 border-2 border-orange-200 rounded-3xl p-12 max-w-md shadow-xl">
-                    {/* Icône animée */}
                     <motion.div
                         animate={{ 
                             rotate: [0, -5, 5, -5, 0],
@@ -213,28 +202,35 @@ const ListRecipes = () => {
                                 transition={{ duration: 2, repeat: Infinity }}
                             />
                             <div className="relative bg-gradient-to-br from-orange-400 to-orange-600 p-8 rounded-full">
-                                <BiDish className="text-6xl text-white" />
+                                {searchQuery ? (
+                                    <FaSearch className="text-6xl text-white" />
+                                ) : (
+                                    <BiDish className="text-6xl text-white" />
+                                )}
                             </div>
                         </div>
                     </motion.div>
-
-                    {/* Titre */}
                     <h3 
                         className="text-4xl font-bold text-gray-800 mb-4 text-center"
                         style={{ fontFamily: 'var(--amatic)', letterSpacing: '1px' }}
                     >
-                        Aucune recette trouvée
+                        {searchQuery ? "Aucun résultat trouvé" : "Aucune recette"}
                     </h3>
-
-                    {/* Message */}
                     <p 
                         className="text-xl text-gray-600 text-center mb-6"
                         style={{ fontFamily: 'var(--caveat)' }}
                     >
-                        Soyez le premier à partager une délicieuse recette ! 🍳
+                        {searchQuery ? (
+                            <>Aucune recette ne correspond à "<span className="font-bold text-orange-600">{searchQuery}</span>"</>
+                        ) : (
+                            "Soyez le premier à partager une délicieuse recette ! 🍳"
+                        )}
                     </p>
-
-                    {/* Icônes décoratives */}
+                    {searchQuery && (
+                        <p className="text-gray-500 text-center text-sm mb-6">
+                            Essayez avec d'autres mots-clés !
+                        </p>
+                    )}
                     <div className="flex justify-center gap-4 text-4xl opacity-50">
                         <motion.span animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 2, repeat: Infinity }}>🍕</motion.span>
                         <motion.span animate={{ y: [0, -10, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}>🍰</motion.span>
@@ -246,7 +242,7 @@ const ListRecipes = () => {
     }
 
     // ============================================
-    // ÉTAT SUCCESS - Grid de recettes avec animations
+    // AFFICHAGE DES RECETTES
     // ============================================
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -259,8 +255,7 @@ const ListRecipes = () => {
     };
 
     return (
-        <div className="w-full">
-            {/* Titre de section avec animation */}
+        <div className="w-full px-4 pb-20">
             <motion.div
                 initial={{ opacity: 0, y: -30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -273,10 +268,9 @@ const ListRecipes = () => {
                     animate={{ scale: [1, 1.02, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
                 >
-                    Nos Délicieuses Recettes
+                    {searchQuery ? `Résultats pour "${searchQuery}"` : 'Nos Délicieuses Recettes'}
                 </motion.h2>
                 
-                {/* Ligne décorative animée */}
                 <motion.div
                     className="w-32 h-1.5 bg-gradient-to-r from-orange-400 via-orange-600 to-orange-400 mx-auto rounded-full"
                     initial={{ width: 0 }}
@@ -284,7 +278,6 @@ const ListRecipes = () => {
                     transition={{ duration: 0.8, delay: 0.3 }}
                 />
                 
-                {/* Compteur avec icône */}
                 <motion.p 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -293,11 +286,10 @@ const ListRecipes = () => {
                     style={{ fontFamily: 'var(--caveat)' }}
                 >
                     <FaSearch className="text-orange-500" />
-                    {recipes.length} recette{recipes.length > 1 ? 's' : ''} pour régaler vos papilles
+                    {recipes.length} recette{recipes.length > 1 ? 's' : ''} trouvée{recipes.length > 1 ? 's' : ''}
                 </motion.p>
             </motion.div>
 
-            {/* Grid de recettes avec animations staggered */}
             <motion.div
                 variants={containerVariants}
                 initial="hidden"
