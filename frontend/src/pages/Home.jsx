@@ -1,5 +1,6 @@
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import ListRecipes from '../components/home/ListRecipes'
 
 const Home = () => {
   return (
@@ -23,6 +24,7 @@ const Home = () => {
         <section className="py-8 sm:py-12 bg-[var(--bg-light)]">
             <div className="max-w-full mx-auto px-8">
                 {/* Liste des recettes */}
+                <ListRecipes />
             </div>
             <Footer />
         </section>
