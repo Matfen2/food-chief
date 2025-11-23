@@ -2,7 +2,7 @@ import React from 'react'
 
 const Footer = () => {
   return (
-    <footer className="max-w-full mx-auto pb-4 pt-12 text-center">
+    <footer className="max-w-full mx-auto pb-0 -mt-8 text-center">
       <p className="text-[var(--text-primary)] text-4xl" style={{ fontFamily: 'var(--amatic)' }}>
         © 2025 FoodChief. Tous droits réservés.
       </p>

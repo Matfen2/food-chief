@@ -278,7 +278,7 @@ const ListRecipes = ({ searchQuery }) => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.5 }}
-                    className="text-xl text-gray-600 mt-4 flex items-center justify-center gap-2"
+                    className="text-xl text-gray-600 mt-4 -mb-4 flex items-center justify-center gap-2"
                     style={{ fontFamily: 'var(--caveat)' }}
                 >
                     <FaSearch className="text-orange-500" />
