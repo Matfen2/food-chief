@@ -1,17 +1,16 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import CardRecipe from "./CardRecipe";
 import { FaUtensils, FaExclamationTriangle, FaSearch } from "react-icons/fa";
 import { IoReload } from "react-icons/io5";
 import { BiDish } from "react-icons/bi";
+// ✅ Import du service API au lieu d'axios
+import { recipeService } from "../../services/api.js";
 
 const ListRecipes = ({ searchQuery }) => {
     const [recipes, setRecipes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
     // Appel API quand searchQuery change
     useEffect(() => {
@@ -23,17 +22,14 @@ const ListRecipes = ({ searchQuery }) => {
             setLoading(true);
             setError(null);
             
-            // Construire l'URL avec ou sans paramètre de recherche
-            let url = `${API_URL}/recipes`;
-            if (searchQuery && searchQuery.trim() !== '') {
-                url += `?title=${encodeURIComponent(searchQuery)}`;
-                console.log("🔍 Recherche API avec:", searchQuery);
-            } else {
-                console.log("📋 Chargement de toutes les recettes");
-            }
+            // ✅ Log de recherche
+            console.log(searchQuery ? `🔍 Recherche: ${searchQuery}` : "📋 Chargement de toutes les recettes");
             
-            const response = await axios.get(url);
-            const data = response.data.data || response.data;
+            // ✅ Utilisation du service API centralisé
+            const response = await recipeService.getAll(searchQuery);
+            
+            // ✅ Extraction des données (adapté à ton API)
+            const data = response.data || response;
             
             console.log(`✅ ${data.length} recette(s) reçue(s)`);
             setRecipes(Array.isArray(data) ? data : []);
