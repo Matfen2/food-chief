@@ -69,7 +69,7 @@ const SearchRecipe = ({ onSearch }) => {
                         onFocus={() => setIsFocused(true)}
                         onBlur={() => setIsFocused(false)}
                         placeholder="Rechercher une recette délicieuse..."
-                        className="w-full py-5 pl-6 pr-32 text-lg text-gray-800 placeholder-gray-400 focus:outline-none"
+                        className="w-full py-5 pl-6 pr-32 text-2xl text-gray-800 placeholder-gray-400 focus:outline-none"
                         style={{ fontFamily: 'var(--caveat)' }}
                     />
 
@@ -94,7 +94,7 @@ const SearchRecipe = ({ onSearch }) => {
                         type="submit"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className="absolute right-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+                        className="absolute right-2 bg-gradient-to-r cursor-pointer from-orange-500 to-orange-600 text-white px-4 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
                         style={{ fontFamily: 'var(--caveat)', letterSpacing: '1px' }}
                     >
                         <FaSearch />

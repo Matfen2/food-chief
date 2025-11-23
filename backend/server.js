@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import recipeRoute from "./routes/recipeRoute.js";
+import userRoute from "./routes/userRoute.js";
 
 // Variables d'environnement
 dotenv.config();
@@ -31,6 +32,7 @@ app.get("/", (req, res) => {
 
 // ✅ Routes API APRÈS les middlewares
 app.use("/api/recipes", recipeRoute);
+app.use("/api/users", userRoute);
 
 // Gestion des routes non trouvées (404)
 app.use((req, res) => {
