@@ -14,7 +14,16 @@ const PORT = process.env.PORT || 3000;
 
 // Middlewares
 app.use(express.json());
-app.use(cors());
+
+// CORS pour la production
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://food-chief.vercel.app',  // ← Ton URL Vercel
+    /\.vercel\.app$/                   // ← Tous les sous-domaines Vercel
+  ],
+  credentials: true
+}));
 
 // Connexion à MongoDB
 connectDB();
