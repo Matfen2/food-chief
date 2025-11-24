@@ -24,65 +24,66 @@ const useRecipe = (id) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchRecipe = async () => {
-      try {
-        setLoading(true);
-        
-        // ✅ Utilisation du service API centralisé
-        const response = await recipeService.getById(id);
-        
-        // ✅ Les headers avec token sont gérés automatiquement par le service
-        if (response.success) {
-          setRecipe(response.data);
-        } else {
-          throw new Error("Impossible de charger la recette");
-        }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+  const fetchRecipe = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await recipeService.getById(id);
+      
+      if (response.success) {
+        setRecipe(response.data);
+      } else {
+        throw new Error("Impossible de charger la recette");
       }
-    };
-
-    if (id) fetchRecipe();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
 
-  return { recipe, loading, error };
+  useEffect(() => {
+    if (id) fetchRecipe();
+  }, [id, fetchRecipe]);
+
+  // Fonction pour mettre à jour la recette localement
+  const updateRecipe = (updatedRecipe) => {
+    setRecipe(updatedRecipe);
+  };
+
+  return { recipe, loading, error, updateRecipe };
 };
 
 /**
  * Hook pour gérer les favoris via le service API
  */
-const useFavorite = (id, initialFavorite = false) => {
-  const [isFavorite, setIsFavorite] = useState(initialFavorite);
-
-  useEffect(() => {
-    setIsFavorite(initialFavorite);
-  }, [initialFavorite]);
+const useFavorite = (recipe, onUpdate) => {
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggleFavorite = useCallback(async () => {
+    if (!recipe?._id || isLoading) return;
+
+    setIsLoading(true);
     try {
-      // ✅ Utilisation du service API
-      // Note : toggleFavorite n'est pas encore implémenté dans api.js
-      // Pour l'instant, on fait un appel direct
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/recipes/${id}/favorite`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // ✅ Utilisation du service API centralisé
+      const response = await recipeService.toggleFavorite(recipe._id);
       
-      if (response.ok) {
-        setIsFavorite(prev => !prev);
+      if (response.success) {
+        // Met à jour la recette avec le nouveau statut
+        onUpdate(response.data);
+        console.log(`⭐ Favori ${response.data.isFavorite ? 'ajouté' : 'retiré'}`);
       }
     } catch (err) {
       console.error("Erreur toggle favori:", err);
+    } finally {
+      setIsLoading(false);
     }
-  }, [id]);
+  }, [recipe?._id, isLoading, onUpdate]);
 
-  return { isFavorite, toggleFavorite };
+  return { 
+    isFavorite: recipe?.isFavorite || false, 
+    toggleFavorite,
+    isLoading 
+  };
 };
 
 /**
@@ -130,8 +131,8 @@ const Recipe = () => {
   const navigate = useNavigate();
   
   // ✅ Utilisation des custom hooks qui appellent le service API
-  const { recipe, loading, error } = useRecipe(id);
-  const { isFavorite, toggleFavorite } = useFavorite(id, recipe?.isFavorite);
+  const { recipe, loading, error, updateRecipe } = useRecipe(id);
+  const { isFavorite, toggleFavorite, isLoading: favoriteLoading } = useFavorite(recipe, updateRecipe);
   const { checkedIngredients, toggleIngredient } = useIngredientChecks(recipe?.ingredients?.length || 0);
   
   const [servings, setServings] = useState(1);
@@ -179,7 +180,10 @@ const Recipe = () => {
       {/* Bouton favori avec animation */}
       <button
         onClick={toggleFavorite}
-        className="absolute top-6 right-6 z-30 p-3.5 rounded-full cursor-pointer bg-white/10 hover:bg-white/20 border border-white/20 transition-all duration-300 backdrop-blur-xl shadow-2xl hover:scale-110 active:scale-95"
+        disabled={favoriteLoading}
+        className={`absolute top-6 right-6 z-30 p-3.5 rounded-full cursor-pointer bg-white/10 hover:bg-white/20 border border-white/20 transition-all duration-300 backdrop-blur-xl shadow-2xl hover:scale-110 active:scale-95 ${
+          favoriteLoading ? 'opacity-50 cursor-wait' : ''
+        }`}
         aria-label={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
       >
         <AnimatePresence mode="wait">

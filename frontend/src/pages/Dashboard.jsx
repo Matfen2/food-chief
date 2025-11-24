@@ -10,7 +10,10 @@ import {
   FiArrowLeft,
   FiSearch,
   FiX,
+  FiHeart,
+  FiBook,
 } from "react-icons/fi";
+import { FaHeart } from "react-icons/fa";
 import { useAuth } from "../context/authContext";
 import { recipeService } from "../services/api";
 import ModalRecipe from "../components/dashboard/ModalRecipe";
@@ -21,8 +24,12 @@ const Dashboard = () => {
 
   // États
   const [recipes, setRecipes] = useState([]);
+  const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  
+  // Onglet actif : "recipes" ou "favorites"
+  const [activeTab, setActiveTab] = useState("recipes");
 
   // États modales
   const [showRecipeModal, setShowRecipeModal] = useState(false);
@@ -31,23 +38,27 @@ const Dashboard = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   // ====================================================
-  // CHARGEMENT DES RECETTES
+  // CHARGEMENT DES DONNÉES
   // ====================================================
 
   useEffect(() => {
-    loadRecipes();
+    loadData();
   }, []);
 
-  const loadRecipes = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
-      const response = await recipeService.getAll();
       
-      if (response.success) {
-        setRecipes(response.data);
+      // Charge toutes les recettes
+      const recipesResponse = await recipeService.getAll();
+      if (recipesResponse.success) {
+        setRecipes(recipesResponse.data);
+        // Filtre les favoris
+        const favs = recipesResponse.data.filter(r => r.isFavorite);
+        setFavorites(favs);
       }
     } catch (error) {
-      console.error("Erreur chargement recettes:", error);
+      console.error("Erreur chargement:", error);
     } finally {
       setLoading(false);
     }
@@ -78,6 +89,7 @@ const Dashboard = () => {
     try {
       await recipeService.delete(selectedRecipe._id);
       setRecipes(recipes.filter((r) => r._id !== selectedRecipe._id));
+      setFavorites(favorites.filter((r) => r._id !== selectedRecipe._id));
       setShowDeleteModal(false);
       setSelectedRecipe(null);
     } catch (error) {
@@ -87,22 +99,51 @@ const Dashboard = () => {
 
   const handleRecipeSaved = (savedRecipe) => {
     if (isEditing) {
-      // Mise à jour
-      setRecipes(
-        recipes.map((r) => (r._id === savedRecipe._id ? savedRecipe : r))
-      );
+      setRecipes(recipes.map((r) => (r._id === savedRecipe._id ? savedRecipe : r)));
+      if (savedRecipe.isFavorite) {
+        setFavorites(favorites.map((r) => (r._id === savedRecipe._id ? savedRecipe : r)));
+      }
     } else {
-      // Création
       setRecipes([savedRecipe, ...recipes]);
     }
     setShowRecipeModal(false);
   };
 
   // ====================================================
-  // FILTRAGE DES RECETTES
+  // TOGGLE FAVORI
   // ====================================================
 
-  const filteredRecipes = recipes.filter((recipe) =>
+  const handleToggleFavorite = async (recipe) => {
+    try {
+      const response = await recipeService.toggleFavorite(recipe._id);
+      
+      if (response.success) {
+        const updatedRecipe = response.data;
+        
+        // Met à jour la liste des recettes
+        setRecipes(recipes.map((r) => 
+          r._id === updatedRecipe._id ? updatedRecipe : r
+        ));
+        
+        // Met à jour la liste des favoris
+        if (updatedRecipe.isFavorite) {
+          setFavorites([...favorites, updatedRecipe]);
+        } else {
+          setFavorites(favorites.filter((r) => r._id !== updatedRecipe._id));
+        }
+      }
+    } catch (error) {
+      console.error("Erreur toggle favori:", error);
+    }
+  };
+
+  // ====================================================
+  // FILTRAGE
+  // ====================================================
+
+  const currentList = activeTab === "recipes" ? recipes : favorites;
+  
+  const filteredRecipes = currentList.filter((recipe) =>
     recipe.title?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -114,7 +155,7 @@ const Dashboard = () => {
     <main
       className="min-h-screen relative text-white overflow-x-hidden"
       style={{
-        backgroundImage: `url('/images/boisWallpaper.jpg')`,
+        backgroundImage: `url('/images/assietteBackground.png')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -127,7 +168,7 @@ const Dashboard = () => {
       <Link
         to="/"
         className="absolute top-6 left-6 z-30 gap-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-2.5 flex items-center justify-center transition-all duration-300 backdrop-blur-xl shadow-2xl hover:scale-105 active:scale-95 group"
-        style={{ fontFamily: "var(--caveat)", letterSpacing: "1px" }}
+        style={{ fontFamily: "var(--caveat)", letterSpacing: "3px" }}
       >
         <FiArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
         <span className="font-semibold text-xl">Retour</span>
@@ -137,29 +178,69 @@ const Dashboard = () => {
       <div className="relative z-10 container mx-auto px-4 py-20 md:py-24">
         {/* Header */}
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
           <h1
-            className="text-5xl md:text-6xl lg:text-8xl font-bold uppercase tracking-wider mb-4"
+            className="text-5xl md:text-6xl lg:text-7xl font-bold uppercase tracking-wider mb-4"
             style={{ fontFamily: "var(--amatic)" }}
           >
             <span className="bg-gradient-to-r from-orange-300 via-orange-400 to-orange-300 bg-clip-text text-transparent">
-              Mes Recettes
+              Tableau de bord
             </span>
           </h1>
           <p
-            className="text-3xl font-bold mt-8   to-blue-100"
+            className="text-xl text-gray-300"
             style={{ fontFamily: "var(--caveat)", letterSpacing: "3px" }}
           >
-            Bienvenue {user?.username} ! Gérez vos créations culinaires 👨‍🍳
+            Bienvenue {user?.username} ! 👨‍🍳
           </p>
+        </motion.div>
+
+        {/* Onglets */}
+        <motion.div
+          className="flex justify-center gap-4 mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <button
+            onClick={() => setActiveTab("recipes")}
+            className={`flex items-center cursor-pointer gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
+              activeTab === "recipes"
+                ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-xl shadow-orange-500/30"
+                : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
+            }`}
+            style={{ fontFamily: "var(--caveat)", letterSpacing: "3px" }}
+          >
+            <FiBook className="w-5 h-5" />
+            <span className="text-xl">Mes Recettes</span>
+            <span className="ml-1 px-2 py-0.5 rounded-full bg-white/20 text-sm">
+              {recipes.length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("favorites")}
+            className={`flex items-center cursor-pointer gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
+              activeTab === "favorites"
+                ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-xl shadow-red-500/30"
+                : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
+            }`}
+            style={{ fontFamily: "var(--caveat)", letterSpacing: "3px" }}
+          >
+            <FiHeart className="w-5 h-5" />
+            <span className="text-xl">Mes Favoris</span>
+            <span className="ml-1 px-2 py-0.5 rounded-full bg-white/20 text-sm">
+              {favorites.length}
+            </span>
+          </button>
         </motion.div>
 
         {/* Barre d'actions */}
         <motion.div
-          className="flex flex-col sm:flex-row gap-4 justify-between items-center -mt-2 mb-8"
+          className="flex flex-col sm:flex-row gap-4 justify-between items-center mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -169,11 +250,11 @@ const Dashboard = () => {
             <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Rechercher une recette..."
+              placeholder={`Rechercher dans ${activeTab === "recipes" ? "mes recettes" : "mes favoris"}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-6 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-orange-400 transition-all backdrop-blur-xl"
-              style={{ fontFamily: "var(--caveat)", letterSpacing: "2px" }}
+              style={{ fontFamily: "var(--caveat)", letterSpacing: "3px" }}
             />
             {searchQuery && (
               <button
@@ -185,27 +266,27 @@ const Dashboard = () => {
             )}
           </div>
 
-          {/* Bouton créer */}
-          <motion.button
-            onClick={handleCreateRecipe}
-            className="flex items-center gap-2 px-6 py-3 cursor-pointer rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold shadow-xl shadow-orange-500/30 hover:shadow-orange-500/50 transition-all"
-            style={{ fontFamily: "var(--caveat)", letterSpacing: "2px" }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FiPlus className="w-5 h-5" />
-            <span className="text-xl">Nouvelle recette</span>
-          </motion.button>
+          {/* Bouton créer (seulement sur l'onglet Recettes) */}
+          {activeTab === "recipes" && (
+            <motion.button
+              onClick={handleCreateRecipe}
+              className="flex items-center cursor-pointer gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold shadow-xl shadow-orange-500/30 hover:shadow-orange-500/50 transition-all"
+              style={{ fontFamily: "var(--caveat)", letterSpacing: "3px" }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FiPlus className="w-5 h-5" />
+              <span className="text-xl">Nouvelle recette</span>
+            </motion.button>
+          )}
         </motion.div>
 
         {/* Contenu principal */}
         {loading ? (
-          // Loader
           <div className="flex justify-center items-center py-20">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500"></div>
           </div>
         ) : filteredRecipes.length === 0 ? (
-          // État vide
           <motion.div
             className="text-center py-20"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -217,21 +298,25 @@ const Dashboard = () => {
             >
               {searchQuery
                 ? "Aucune recette trouvée"
-                : "Aucune recette pour le moment"}
+                : activeTab === "recipes"
+                ? "Aucune recette pour le moment"
+                : "Aucun favori pour le moment"}
             </h3>
             <p
               className="text-gray-400 mb-8"
-              style={{ fontFamily: "var(--caveat)", letterSpacing: "2px" }}
+              style={{ fontFamily: "var(--caveat)", letterSpacing: "3px" }}
             >
               {searchQuery
                 ? "Essayez avec d'autres termes de recherche"
-                : "Créez votre première recette et partagez vos talents culinaires !"}
+                : activeTab === "recipes"
+                ? "Créez votre première recette !"
+                : "Ajoutez des recettes à vos favoris en cliquant sur le cœur ❤️"}
             </p>
-            {!searchQuery && (
+            {!searchQuery && activeTab === "recipes" && (
               <motion.button
                 onClick={handleCreateRecipe}
                 className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold shadow-xl shadow-orange-500/30"
-                style={{ fontFamily: "var(--caveat)", letterSpacing: "2px" }}
+                style={{ fontFamily: "var(--caveat)", letterSpacing: "3px" }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -241,7 +326,6 @@ const Dashboard = () => {
             )}
           </motion.div>
         ) : (
-          // Grille de recettes
           <motion.div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             initial={{ opacity: 0 }}
@@ -272,7 +356,7 @@ const Dashboard = () => {
                       {/* Badge difficulté */}
                       {recipe.difficulty && (
                         <span
-                          className={`absolute top-3 right-3 px-3 py-1 rounded-full text-lg font-semibold ${
+                          className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold ${
                             recipe.difficulty === "Facile"
                               ? "bg-green-500/80"
                               : recipe.difficulty === "Moyen"
@@ -284,6 +368,22 @@ const Dashboard = () => {
                           {recipe.difficulty}
                         </span>
                       )}
+
+                      {/* Bouton favori */}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleToggleFavorite(recipe);
+                        }}
+                        className="absolute top-3 right-3 p-2 rounded-full bg-black/30 hover:bg-black/50 transition-all"
+                      >
+                        {recipe.isFavorite ? (
+                          <FaHeart className="w-5 h-5 text-red-500" />
+                        ) : (
+                          <FiHeart className="w-5 h-5 text-white" />
+                        )}
+                      </button>
                     </div>
                   </Link>
 
@@ -291,17 +391,16 @@ const Dashboard = () => {
                   <div className="p-5">
                     <Link to={`/recipe/${recipe._id}`}>
                       <h3
-                        className="text-3xl font-bold text-white mb-3 line-clamp-1 hover:text-orange-400 transition-colors"
+                        className="text-2xl font-bold text-white mb-2 line-clamp-1 hover:text-orange-400 transition-colors"
                         style={{ fontFamily: "var(--amatic)" }}
                       >
                         {recipe.title}
                       </h3>
                     </Link>
 
-                    {/* Description courte */}
                     {recipe.description && (
                       <p
-                        className="text-gray-400 text-lg mb-3 line-clamp-2"
+                        className="text-gray-400 text-sm mb-3 line-clamp-2"
                         style={{ fontFamily: "var(--caveat)", letterSpacing: "3px" }}
                       >
                         {recipe.description}
@@ -309,11 +408,11 @@ const Dashboard = () => {
                     )}
 
                     {/* Infos */}
-                    <div className="flex items-center gap-8 text-gray-400 mb-4">
+                    <div className="flex items-center gap-4 text-gray-400 text-sm mb-4">
                       {recipe.prepTime !== undefined && (
                         <div className="flex items-center gap-1">
                           <FiClock className="w-4 h-4" />
-                          <span className="text-xl ml-1" style={{ fontFamily: "var(--caveat)", letterSpacing: "3px" }}>
+                          <span style={{ fontFamily: "var(--caveat)" }}>
                             {recipe.prepTime + (recipe.cookTime || 0)} min
                           </span>
                         </div>
@@ -321,7 +420,7 @@ const Dashboard = () => {
                       {recipe.servings && (
                         <div className="flex items-center gap-1">
                           <FiUsers className="w-4 h-4" />
-                          <span className="text-xl ml-1" style={{ fontFamily: "var(--caveat)", letterSpacing: "3px" }}>
+                          <span style={{ fontFamily: "var(--caveat)" }}>
                             {recipe.servings} pers.
                           </span>
                         </div>
@@ -332,24 +431,24 @@ const Dashboard = () => {
                     <div className="flex gap-3">
                       <motion.button
                         onClick={() => handleEditRecipe(recipe)}
-                        className="flex-1 flex items-center justify-center cursor-pointer gap-2 px-4 py-2.5 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 transition-all"
-                        style={{ fontFamily: "var(--caveat)", letterSpacing: "1px" }}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 transition-all"
+                        style={{ fontFamily: "var(--caveat)", letterSpacing: "3px" }}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
                         <FiEdit2 className="w-4 h-4" />
-                        <span className="text-xl">Modifier</span>
+                        <span>Modifier</span>
                       </motion.button>
 
                       <motion.button
                         onClick={() => handleDeleteClick(recipe)}
-                        className="flex-1 flex items-center justify-center cursor-pointer gap-2 px-4 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 transition-all"
-                        style={{ fontFamily: "var(--caveat)", letterSpacing: "1px" }}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 transition-all"
+                        style={{ fontFamily: "var(--caveat)", letterSpacing: "3px" }}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
                         <FiTrash2 className="w-4 h-4" />
-                        <span className="text-xl">Supprimer</span>
+                        <span>Supprimer</span>
                       </motion.button>
                     </div>
                   </div>
@@ -360,7 +459,7 @@ const Dashboard = () => {
         )}
 
         {/* Stats */}
-        {!loading && recipes.length > 0 && (
+        {!loading && currentList.length > 0 && (
           <motion.div
             className="mt-12 text-center"
             initial={{ opacity: 0 }}
@@ -369,9 +468,11 @@ const Dashboard = () => {
           >
             <p
               className="text-white text-2xl"
-              style={{ fontFamily: "var(--caveat)", letterSpacing: "2px" }}
+              style={{ fontFamily: "var(--caveat)", letterSpacing: "3px" }}
             >
-              {recipes.length} recette{recipes.length > 1 ? "s" : ""} au total
+              {filteredRecipes.length} {activeTab === "recipes" ? "recette" : "favori"}
+              {filteredRecipes.length > 1 ? "s" : ""} 
+              {searchQuery ? " trouvée" + (filteredRecipes.length > 1 ? "s" : "") : ""}
             </p>
           </motion.div>
         )}
