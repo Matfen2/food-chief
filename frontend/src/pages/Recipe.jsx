@@ -16,9 +16,6 @@ import { recipeService } from "../services/api";
 // CUSTOM HOOKS
 // ========================================
 
-/**
- * Hook pour charger une recette via le service API
- */
 const useRecipe = (id) => {
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -45,7 +42,6 @@ const useRecipe = (id) => {
     if (id) fetchRecipe();
   }, [id, fetchRecipe]);
 
-  // Fonction pour mettre à jour la recette localement
   const updateRecipe = (updatedRecipe) => {
     setRecipe(updatedRecipe);
   };
@@ -53,9 +49,6 @@ const useRecipe = (id) => {
   return { recipe, loading, error, updateRecipe };
 };
 
-/**
- * Hook pour gérer les favoris via le service API
- */
 const useFavorite = (recipe, onUpdate) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -64,11 +57,9 @@ const useFavorite = (recipe, onUpdate) => {
 
     setIsLoading(true);
     try {
-      // ✅ Utilisation du service API centralisé
       const response = await recipeService.toggleFavorite(recipe._id);
       
       if (response.success) {
-        // Met à jour la recette avec le nouveau statut
         onUpdate(response.data);
         console.log(`⭐ Favori ${response.data.isFavorite ? 'ajouté' : 'retiré'}`);
       }
@@ -86,9 +77,6 @@ const useFavorite = (recipe, onUpdate) => {
   };
 };
 
-/**
- * Hook pour gérer les checkboxes d'ingrédients (logique locale)
- */
 const useIngredientChecks = (ingredientsLength) => {
   const [checkedIngredients, setCheckedIngredients] = useState({});
 
@@ -124,13 +112,12 @@ const ANIMATION_VARIANTS = {
 };
 
 // ========================================
-// MAIN COMPONENT
+// MAIN COMPONENT - ✅ Responsive
 // ========================================
 const Recipe = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   
-  // ✅ Utilisation des custom hooks qui appellent le service API
   const { recipe, loading, error, updateRecipe } = useRecipe(id);
   const { isFavorite, toggleFavorite, isLoading: favoriteLoading } = useFavorite(recipe, updateRecipe);
   const { checkedIngredients, toggleIngredient } = useIngredientChecks(recipe?.ingredients?.length || 0);
@@ -164,24 +151,28 @@ const Recipe = () => {
       <div className="absolute inset-0 bg-black/65 backdrop-blur-[2px] z-0" />
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=')] opacity-30 z-0" />
 
-      {/* Bouton retour avec effet glassmorphism */}
+      {/* ====================================================
+          BOUTON RETOUR - ✅ Responsive
+          ==================================================== */}
       <Link
         to="/"
-        className="absolute top-6 left-6 z-30 gap-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-2.5 flex items-center justify-center transition-all duration-300 backdrop-blur-xl shadow-2xl hover:scale-105 active:scale-95 group"
-        style={{ fontFamily: "var(--spbutch)" }}
+        className="absolute top-4 left-4 sm:top-6 sm:left-6 z-30 gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 px-2.5 py-2 sm:px-3 sm:py-2.5 flex items-center justify-center transition-all duration-300 backdrop-blur-xl shadow-2xl hover:scale-105 active:scale-95 group"
+        style={{ fontFamily: "var(--caveat)" }}
       >
-        <FaArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+        <FaArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:-translate-x-1 transition-transform" />
         <span 
-          className="font-semibold text-xl"
+          className="hidden xs:inline font-semibold text-lg sm:text-xl"
           style={{ fontFamily: 'var(--caveat)', letterSpacing: '1px' }}   
         >Retour</span>
       </Link>
 
-      {/* Bouton favori avec animation */}
+      {/* ====================================================
+          BOUTON FAVORI - ✅ Responsive
+          ==================================================== */}
       <button
         onClick={toggleFavorite}
         disabled={favoriteLoading}
-        className={`absolute top-6 right-6 z-30 p-3.5 rounded-full cursor-pointer bg-white/10 hover:bg-white/20 border border-white/20 transition-all duration-300 backdrop-blur-xl shadow-2xl hover:scale-110 active:scale-95 ${
+        className={`absolute top-4 right-4 sm:top-6 sm:right-6 z-30 p-2.5 sm:p-3.5 rounded-full cursor-pointer bg-white/10 hover:bg-white/20 border border-white/20 transition-all duration-300 backdrop-blur-xl shadow-2xl hover:scale-110 active:scale-95 ${
           favoriteLoading ? 'opacity-50 cursor-wait' : ''
         }`}
         aria-label={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
@@ -195,7 +186,7 @@ const Recipe = () => {
               exit={{ scale: 0, rotate: 180 }}
               transition={{ type: "spring", stiffness: 200 }}
             >
-              <FaHeart className="w-6 h-6 text-red-500 drop-shadow-lg" />
+              <FaHeart className="w-5 h-5 sm:w-6 sm:h-6 text-red-500 drop-shadow-lg" />
             </motion.div>
           ) : (
             <motion.div
@@ -205,14 +196,16 @@ const Recipe = () => {
               exit={{ scale: 0, rotate: -180 }}
               transition={{ type: "spring", stiffness: 200 }}
             >
-              <FaRegHeart className="w-6 h-6 text-white" />
+              <FaRegHeart className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </motion.div>
           )}
         </AnimatePresence>
       </button>
 
-      {/* Contenu principal */}
-      <div className="relative z-10 container mx-auto px-4 py-20 md:py-24 max-w-8xl">
+      {/* ====================================================
+          CONTENU PRINCIPAL - ✅ Responsive
+          ==================================================== */}
+      <div className="relative z-10 container mx-auto px-3 sm:px-4 py-16 sm:py-20 md:py-24 max-w-8xl">
         <motion.div
           className="flex flex-col items-center"
           variants={ANIMATION_VARIANTS.container}
@@ -236,9 +229,9 @@ const Recipe = () => {
           />
         </motion.div>
 
-        {/* Sections avec meilleur gap */}
+        {/* Sections Ingrédients/Instructions - ✅ Responsive */}
         <motion.div
-          className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 xl:gap-10"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.5 }}

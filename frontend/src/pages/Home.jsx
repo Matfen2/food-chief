@@ -6,42 +6,45 @@ import ListRecipes from '../components/home/ListRecipes'
 
 const Home = () => {
   // État de recherche
-    const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
-    // Fonction pour déclencher la recherche
-    const handleSearch = (query) => {
-        console.log("Nouvelle recherche:", query);
-        setSearchQuery(query);
-    };
+  // Fonction pour déclencher la recherche
+  const handleSearch = (query) => {
+    console.log("Nouvelle recherche:", query);
+    setSearchQuery(query);
+  };
 
   return (
     <main className="min-h-screen flex flex-col">
-        {/* Hero avec background */}
-        <section className="relative min-h-[500px] md:min-h-[700px] bg-cover bg-center bg-no-repeat w-full" 
-            style={{ backgroundImage: `url('/images/headerbg.png')` }}>
+      {/* ====================================================
+          HERO SECTION - ✅ Responsive
+          ==================================================== */}
+      <section 
+        className="relative min-h-[400px] xs:min-h-[450px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-[700px] bg-cover bg-center bg-no-repeat w-full" 
+        style={{ backgroundImage: `url('/images/headerbg.png')` }}
+      >
+        {/* Overlay sombre */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-orange-900/60" />
 
-            {/* Overlay sombre */}
-            <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-orange-900/60" />
+        {/* Contenu de la section Hero */}
+        <div className="relative z-10 h-full flex flex-col">
+          <Header />
+          <div className="flex-1 flex pt-4 xs:pt-6 sm:pt-8 md:pt-4 items-center justify-center w-full">
+            <SearchRecipe onSearch={handleSearch} />
+          </div>
+        </div>
+      </section>
 
-
-            {/* Contenu de la section Hero */}
-
-            <div className="relative z-10 h-full flex flex-col">
-                <Header />
-                <div className="flex-1 flex pt-12 md:pt-4 items-center justify-center w-full">
-                    <SearchRecipe onSearch={handleSearch} />
-                </div>
-            </div>
-        </section>
-
-        {/* Section recettes */}
-        <section className="sm:py-8 bg-[var(--bg-light)]">
-            <div className="max-w-full mx-auto px-8">
-                {/* Liste des recettes */}
-                <ListRecipes searchQuery={searchQuery} />
-            </div>
-            <Footer />
-        </section>
+      {/* ====================================================
+          SECTION RECETTES - ✅ Responsive
+          ==================================================== */}
+      <section className="py-6 sm:py-8 bg-[var(--bg-light)]">
+        <div className="max-w-full mx-auto px-2 xs:px-4 sm:px-6 md:px-8">
+          {/* Liste des recettes */}
+          <ListRecipes searchQuery={searchQuery} />
+        </div>
+        <Footer />
+      </section>
     </main>
   )
 }

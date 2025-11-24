@@ -100,7 +100,7 @@ const ModalLogin = ({ isOpen, onClose, onSwitchToSignUp }) => {
               <div className="relative p-8">
                 <button
                   onClick={onClose}
-                  className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-all"
+                  className="absolute top-4 right-4 p-2 rounded-full cursor-pointer hover:bg-white/10 transition-all"
                 >
                   <FiX className="w-6 h-6 text-white" />
                 </button>
@@ -117,7 +117,7 @@ const ModalLogin = ({ isOpen, onClose, onSwitchToSignUp }) => {
               </div>
 
               {/* Formulaire */}
-              <form onSubmit={handleSubmit} className="relative p-8 space-y-6">
+              <form onSubmit={handleSubmit} className="relative p-8 space-y-6 -mt-8">
                 {/* Erreur */}
                 <AnimatePresence>
                   {error && (
@@ -188,7 +188,7 @@ const ModalLogin = ({ isOpen, onClose, onSwitchToSignUp }) => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-white transition-colors"
                     >
                       {showPassword ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
                     </button>
@@ -199,7 +199,7 @@ const ModalLogin = ({ isOpen, onClose, onSwitchToSignUp }) => {
                 <motion.button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold shadow-xl shadow-orange-500/30 hover:shadow-orange-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 cursor-pointer rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold shadow-xl shadow-orange-500/30 hover:shadow-orange-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ fontFamily: "var(--caveat)", letterSpacing: "2px" }}
                   whileHover={{ scale: loading ? 1 : 1.02 }}
                   whileTap={{ scale: loading ? 1 : 0.98 }}
@@ -216,7 +216,7 @@ const ModalLogin = ({ isOpen, onClose, onSwitchToSignUp }) => {
                   <button
                     type="button"
                     onClick={onSwitchToSignUp}
-                    className="text-orange-400 hover:text-orange-300 font-semibold transition-colors"
+                    className="text-orange-400 hover:text-orange-300 cursor-pointer font-semibold transition-colors"
                   >
                     S'inscrire
                   </button>

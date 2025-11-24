@@ -30,7 +30,7 @@ const CardRecipe = ({ recipe }) => {
             transition={{ duration: 0.5 }}
             whileHover={{ y: -8 }}
             onClick={handleClick}
-            className="group relative h-80 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer"
+            className="group relative h-64 xs:h-72 sm:h-80 rounded-xl sm:rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer"
         >
             {/* IMAGE DE FOND (toujours visible) */}
             <motion.img
@@ -43,26 +43,26 @@ const CardRecipe = ({ recipe }) => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
             {/* CONTENU CENTRÉ AU MILIEU (apparaît au hover) */}
-            <div className="absolute inset-0 flex flex-col justify-center items-center p-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+            <div className="absolute inset-0 flex flex-col justify-center items-center p-4 sm:p-6 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
 
-                {/* TITRE */}
+                {/* TITRE - ✅ Responsive */}
                 <h3
-                    className="text-3xl md:text-4xl text-center font-bold text-white mb-6 line-clamp-2 drop-shadow-lg"
+                    className="text-2xl xs:text-3xl sm:text-3xl md:text-4xl text-center font-bold text-white mb-4 sm:mb-6 line-clamp-2 drop-shadow-lg px-2"
                     style={{ fontFamily: 'var(--amatic)', letterSpacing: '1px' }}
                 >
                     {recipe.title}
                 </h3>
 
-                {/* 3 BADGES HORIZONTAUX (Temps | Portions | Difficulté) */}
-                <div className="flex items-center justify-center gap-3">
+                {/* BADGES - ✅ Responsive : wrap sur mobile, horizontal sur desktop */}
+                <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
                     
                     {/* Badge Temps */}
                     <motion.div
                         whileHover={{ scale: 1.05 }}
-                        className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/30"
+                        className="flex items-center gap-1.5 sm:gap-2 bg-white/20 backdrop-blur-md px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/30"
                     >
-                        <FaClock className="text-orange-400 text-lg" />
-                        <span className="text-white font-bold text-sm">
+                        <FaClock className="text-orange-400 text-sm sm:text-lg" />
+                        <span className="text-white font-bold text-xs sm:text-sm">
                             {(recipe.prepTime || 0) + (recipe.cookTime || 0)} min
                         </span>
                     </motion.div>
@@ -70,10 +70,10 @@ const CardRecipe = ({ recipe }) => {
                     {/* Badge Portions */}
                     <motion.div
                         whileHover={{ scale: 1.05 }}
-                        className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/30"
+                        className="flex items-center gap-1.5 sm:gap-2 bg-white/20 backdrop-blur-md px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/30"
                     >
-                        <FaUsers className="text-blue-400 text-lg" />
-                        <span className="text-white font-bold text-sm">
+                        <FaUsers className="text-blue-400 text-sm sm:text-lg" />
+                        <span className="text-white font-bold text-xs sm:text-sm">
                             {recipe.servings || 1} pers.
                         </span>
                     </motion.div>
@@ -81,18 +81,23 @@ const CardRecipe = ({ recipe }) => {
                     {/* Badge Difficulté */}
                     <motion.div
                         whileHover={{ scale: 1.05 }}
-                        className={`bg-gradient-to-r ${getDifficultyColor(recipe.difficulty)} text-white px-4 py-2 rounded-full text-sm font-bold shadow-xl flex items-center gap-2`}
+                        className={`bg-gradient-to-r ${getDifficultyColor(recipe.difficulty)} text-white px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold shadow-xl flex items-center gap-1.5 sm:gap-2`}
                     >
                         <FaFire className="text-xs" />
-                        {recipe.difficulty}
+                        <span className="hidden xs:inline">{recipe.difficulty}</span>
+                        {/* Version courte sur très petit écran */}
+                        <span className="xs:hidden">
+                            {recipe.difficulty === "Facile" ? "Easy" : 
+                             recipe.difficulty === "Moyen" ? "Med" : "Hard"}
+                        </span>
                     </motion.div>
                 </div>
 
-                {/* AUTEUR (optionnel, en dessous des badges) */}
+                {/* AUTEUR (optionnel) - ✅ Responsive */}
                 {recipe.author && (
                     <motion.p
                         initial={{ opacity: 0 }}
-                        className="text-center text-white/70 text-sm mt-4"
+                        className="text-center text-white/70 text-xs sm:text-sm mt-3 sm:mt-4"
                     >
                         Par {recipe.author}
                     </motion.p>

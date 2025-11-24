@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 const LoadingState = () => {
   return (
     <div
-      className="min-h-screen flex items-center justify-center relative overflow-hidden"
+      className="min-h-screen flex items-center justify-center relative overflow-hidden px-4"
       style={{
         backgroundImage: `url('/images/assietteBackground.png')`,
         backgroundSize: "cover",
@@ -14,13 +14,13 @@ const LoadingState = () => {
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=')] opacity-30" />
 
-      {/* Contenu loading */}
-      <div className="relative z-10 text-center">
-        {/* Animation de cuisson complexe */}
-        <div className="relative w-40 h-40 mx-auto mb-8">
+      {/* Contenu loading - ✅ Responsive */}
+      <div className="relative z-10 text-center w-full max-w-sm sm:max-w-md">
+        {/* Animation de cuisson - ✅ Responsive */}
+        <div className="relative w-28 h-28 xs:w-32 xs:h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 mx-auto mb-6 sm:mb-8">
           {/* Assiette */}
           <motion.div
-            className="absolute inset-0 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 border-4 border-white/20"
+            className="absolute inset-0 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 border-2 sm:border-4 border-white/20"
             animate={{
               rotate: 360,
             }}
@@ -31,9 +31,9 @@ const LoadingState = () => {
             }}
           />
 
-          {/* Couverts animés */}
+          {/* Emoji animé */}
           <motion.div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-4xl xs:text-5xl sm:text-6xl"
             animate={{
               rotate: [0, 10, -10, 0],
               scale: [1, 1.1, 1],
@@ -51,14 +51,14 @@ const LoadingState = () => {
           {[...Array(8)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-3 h-3 rounded-full bg-orange-400"
+              className="absolute w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-orange-400"
               style={{
                 top: "50%",
                 left: "50%",
               }}
               animate={{
-                x: [0, Math.cos(i * 45 * Math.PI / 180) * 80],
-                y: [0, Math.sin(i * 45 * Math.PI / 180) * 80],
+                x: [0, Math.cos(i * 45 * Math.PI / 180) * 60],
+                y: [0, Math.sin(i * 45 * Math.PI / 180) * 60],
                 opacity: [1, 0],
                 scale: [1, 0.5],
               }}
@@ -72,9 +72,9 @@ const LoadingState = () => {
           ))}
         </div>
 
-        {/* Texte avec gradient animé */}
+        {/* Texte avec gradient animé - ✅ Responsive */}
         <motion.h2
-          className="text-4xl font-bold mb-6 bg-gradient-to-r from-orange-300 via-orange-400 to-orange-300 bg-clip-text text-transparent"
+          className="text-2xl xs:text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-orange-300 via-orange-400 to-orange-300 bg-clip-text text-transparent px-2"
           style={{ 
             fontFamily: "var(--amatic)",
             backgroundSize: "200% 200%"
@@ -91,11 +91,11 @@ const LoadingState = () => {
           Préparation de votre recette...
         </motion.h2>
 
-        {/* Barres de chargement multiples */}
-        <div className="w-64 mx-auto space-y-3">
+        {/* Barres de chargement - ✅ Responsive */}
+        <div className="w-full max-w-[250px] sm:max-w-[280px] md:max-w-[300px] mx-auto space-y-2 sm:space-y-3">
           {["Ingrédients", "Instructions", "Photos"].map((item, index) => (
             <div key={item} className="space-y-1">
-              <div className="flex justify-between text-xs text-gray-400">
+              <div className="flex justify-between text-[10px] xs:text-xs text-gray-400">
                 <span>{item}</span>
                 <motion.span
                   animate={{ opacity: [0.5, 1, 0.5] }}
@@ -104,7 +104,7 @@ const LoadingState = () => {
                   ⏳
                 </motion.span>
               </div>
-              <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div className="h-1 sm:h-1.5 bg-white/10 rounded-full overflow-hidden">
                 <motion.div
                   className="h-full bg-gradient-to-r from-orange-500 to-orange-400 rounded-full"
                   initial={{ width: "0%" }}
@@ -122,11 +122,11 @@ const LoadingState = () => {
         </div>
 
         {/* Points animés */}
-        <div className="flex justify-center gap-2 mt-8">
+        <div className="flex justify-center gap-1.5 sm:gap-2 mt-6 sm:mt-8">
           {[...Array(3)].map((_, i) => (
             <motion.div
               key={i}
-              className="w-3 h-3 rounded-full bg-orange-400"
+              className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-orange-400"
               animate={{
                 scale: [1, 1.5, 1],
                 opacity: [0.3, 1, 0.3],
